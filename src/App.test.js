@@ -1,8 +1,28 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, waitForElementToBeRemoved } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+test('searches for cat breed successfully', async () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  
+  const searchInputElement = screen.getByTestId('search-input')
+
+  fireEvent.change(searchInputElement, {target: {value: 'bengal'}})
+
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve()
+    }, 1100)
+  })
+
+  const loaderElement = screen.getByTestId('loader')
+
+  expect(loaderElement).toBeInTheDocument()
+
+  expect(searchInputElement.value).toEqual('bengal')
+                                                                                                                      
+  await waitForElementToBeRemoved(() => screen.queryByTestId('loader'))
+
+  const result = screen.getByText('Bengal')
+  expect(result).toBeInTheDocument()
+
 });
